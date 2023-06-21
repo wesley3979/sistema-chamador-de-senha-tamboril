@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Chamador de Senha</title>
+
+    <!-- JQUERY -->
+    <script src="/jquery/jquery-3.6.1.min.js"></script>
+
+    <!-- bootstrap -->
+    <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!--google fonts-->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+
+    <!-- CSS GLOBAL -->
+    <link href="/styles/global.css" rel="stylesheet" />
+
+    <!-- CSS DA PÁGINA -->
+    <link href="/styles/admin/home.css" rel="stylesheet" />
+</head>
+
+<body style="position: relative">
+    <%- include("../partialViews/toastNotifications"); %>
+        <%- include("../partialViews/spinner"); %>
+
+            <div class="container-fluid d-flex justify-content-center align-items-center bg-secondary">
+                <div class="row d-flex justify-content-center align-items-center">
+                    <div class="col-6">
+                        <div class="row d-flex justify-content-center">
+                            <div class="col-12 mb-2 d-flex justify-content-center">
+                                <img title="Logo" src="/img/logo-site.png" alt="Logo" height="200rem">
+                            </div>
+                            <div class="col-12 mb-2 d-flex justify-content-center">
+                                <span class="fw-bold" style="font-size: 25px; color: aliceblue;">MANUTENÇÃO DO
+                                    SISTEMA</span>
+                            </div>
+                            <div class="col-12 mb-2 d-flex justify-content-center">
+                                <a id="btnUbs" class="btn btn-success shadow">Unidades Básicas de Saúde</a>
+                            </div>
+                            <div class="col-12 mb-2 d-flex justify-content-center">
+                                <a id="btnSetores" class="btn btn-info shadow">Setores</a>
+                            </div>
+                            <div class="col-12 mb-2 d-flex justify-content-center">
+                                <a id="btnUsuarios" class="btn btn-warning shadow">Usuários</a>
+                            </div>
+                            <div class="col-12 mb-2 d-flex justify-content-center">
+                                <a id="btnVideos" class="btn btn-primary shadow">Vídeos</a>
+                            </div>
+                            <div class="col-12 mb-2 d-flex justify-content-center">
+                                <a id="btnMeuUsuario" class="btn btn-danger shadow" data-bs-toggle="modal"
+                                    data-bs-target="#logoutModal">Sair</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODAL USER LIST -->
+            <div class="modal fade" id="modalUserList" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Usuários</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <table id="userListTable" class="table">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th class="col-4" scope="col">Usuário</th>
+                                        <th class="col-3" scope="col">Setor</th>
+                                        <th class="col-4" scope="col">UBS</th>
+                                        <th class="col-1" scope="col">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="modal-footer">
+                            <button id="btnAddUser" type="button" class="btn btn-success">Adicionar usuário</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ADD USER MODAL -->
+            <div class="modal fade" id="addUserModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Cadastrar Usuário</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="createUserForm">
+                                <div class="row">
+                                    <div class="col-6 mb-3">
+                                        <label for="name" class="col-form-label">Nome:</label>
+                                        <input type="text" required class="form-control" id="name">
+                                    </div>
+                                    <div class="col-6 mb-3">
+                                        <label for="lastName" class="col-form-label">Sobrenome:</label>
+                                        <input type="text" required class="form-control" id="lastName">
+                                    </div>
+                                    <div class="col-12 mb-3">
+                                        <label for="ubsIdForAddUser" class="col-form-label">UBS:</label>
+                                        <select id="ubsIdForAddUser" required class="form-select"
+                                            aria-label=".form-select-sm">
+                                        </select>
+                                    </div>
+                                    <div class="col-12 mb-3">
+                                        <label for="setorIdForAddUser" class="col-form-label">Setor:</label>
+                                        <select id="setorIdForAddUser" disabled="true" required class="form-select"
+                                            aria-label=".form-select-sm">
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Fechar</button>
+                                    <button type="submit" class="btn btn-success">Cadastrar</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODAL USER CREDENTIAL -->
+            <div class="modal fade" id="userCredentialModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Informações cadastradas:</h5>
+                        </div>
+                        <div class="modal-body">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODAL DELETE USER -->
+            <div class="modal fade" id="userDeleteModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <input id="userIdForRemove" type="text" value="" hidden>
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Excluir usuário</h5>
+                        </div>
+                        <div class="modal-body">
+                            O usuário será excluído permanentamente, realmente deseja excluir?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                            <button id="btnDeleteUserModal" href="#" type="button" class="btn btn-danger"
+                                data-bs-dismiss="modal">Excluir</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODAL REGENRATE PASSWORD -->
+            <div class="modal fade" id="userRegeneratePasswordModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <input id="userRegeneratePasswordModal" type="text" value="" hidden>
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Resetar senha</h5>
+                        </div>
+                        <div class="modal-body">
+                            Será gerada um nova senha para o usuário, deseja continuar?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                            <button id="btnUserRegeneratePassword" href="#" type="button" class="btn btn-warning"
+                                data-bs-dismiss="modal">Gerar senha</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EDIT USER MODAL -->
+            <div class="modal fade" id="editUserModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Editar Usuário</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="editUserForm">
+                                <input id="userIdforEditUser" type="text" value="" hidden>
+                                <div class="row">
+                                    <div class="col-6 mb-3">
+                                        <label for="nameEditUser" class="col-form-label">Nome:</label>
+                                        <input type="text" required class="form-control" id="nameEditUser">
+                                    </div>
+                                    <div class="col-6 mb-3">
+                                        <label for="lastNameEditUser" class="col-form-label">Sobrenome:</label>
+                                        <input type="text" required class="form-control" id="lastNameEditUser">
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Fechar</button>
+                                    <button type="submit" class="btn btn-primary">Editar</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODAL SETOR LIST -->
+            <div class="modal fade" id="modalSetorList" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Setores</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <table id="setorListTable" class="table">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th class="col-5" scope="col">Setor</th>
+                                        <th class="col-4" scope="col">UBS</th>
+                                        <th class="col-3" scope="col">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="modal-footer">
+                            <button id="btnAddSetor" type="button" class="btn btn-success">Adicionar setor</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ADD SETOR MODAL -->
+            <div class="modal fade" id="addSetorModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Cadastrar Setor</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="createSetorForm">
+                                <div class="row">
+                                    <div class="col-12 mb-3">
+                                        <label for="ubsIdForAddSetor" class="col-form-label">Selecione a UBS:</label>
+                                        <select id="ubsIdForAddSetor" required class="form-select"
+                                            aria-label=".form-select-sm">
+                                            <option value="" selected>Selecione</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 mb-3">
+                                        <label for="setorName" class="col-form-label">Nome do setor:</label>
+                                        <input type="text" required class="form-control" id="setorName">
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Fechar</button>
+                                    <button type="submit" class="btn btn-success">Cadastrar</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODAL DELETE SETOR -->
+            <div class="modal fade" id="setorDeleteModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <input id="setorIdForRemove" type="text" value="" hidden>
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Excluir setor</h5>
+                        </div>
+                        <div class="modal-body">
+                            O setor será excluído permanentamente, realmente deseja excluir?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                            <button id="btnDeleteSetorModal" href="#" type="button" class="btn btn-danger"
+                                data-bs-dismiss="modal">Excluir</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODAL UBS LIST -->
+            <div class="modal fade" id="modalUbsList" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Unidades Básicas de Saúde cadastradas no sistema</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <table id="ubsListTable" class="table">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th class="col-9" scope="col">UBS</th>
+                                        <th class="col-3" scope="col">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="modal-footer">
+                            <button id="btnAddUbs" type="button" class="btn btn-success">Adicionar UBS</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ADD UBS MODAL -->
+            <div class="modal fade" id="addUbsModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Cadastrar Unidade Básica de Saúde</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="createUbsForm">
+                                <div class="row">
+                                    <div class="col-6 mb-3">
+                                        <label for="ubsName" class="col-form-label">Nome da UBS:</label>
+                                        <input type="text" required class="form-control" id="ubsName">
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Fechar</button>
+                                    <button type="submit" class="btn btn-success">Cadastrar</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODAL DELETE UBS -->
+            <div class="modal fade" id="ubsDeleteModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <input id="ubsIdForRemove" type="text" value="" hidden>
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Excluir Unidade Básica de Saúde</h5>
+                        </div>
+                        <div class="modal-body">
+                            A UBS será excluída permanentamente, realmente deseja excluir?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                            <button id="btnDeleteUbsModal" href="#" type="button" class="btn btn-danger"
+                                data-bs-dismiss="modal">Excluir</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODAL VIDEO LIST -->
+            <div class="modal fade" id="modalVideoList" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Vídeos cadastrados no sistema:</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <table id="videoListTable" class="table">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th class="col-9" scope="col">UBS</th>
+                                        <th class="col-3" scope="col">Vídeo</th>
+                                        <th class="col-3" scope="col">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="modal-footer">
+                            <button id="btnAddVideo" type="button" class="btn btn-success">Adicionar Vídeo</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ADD ADD VIDEO -->
+            <div class="modal fade" id="addVideoModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Cadastrar vídeo à UBS</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="createVideoForm" class="needs-validation" enctype="multipart/form-data">
+                                <div class="row">
+                                    <div class="col-12 mb-3">
+                                        <label for="ubsIdForAddVideo" class="col-form-label">Selecione a UBS:</label>
+                                        <select id="ubsIdForAddVideo" name="ubsIdForAddVideo" required
+                                            class="form-select" aria-label=".form-select-sm">
+                                            <option value="" selected>Selecione</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 mb-3">
+                                        <h5 class="mt-3">Selecione um vídeo em formato MP4:</h5>
+                                        <div class="input-group my-3">
+                                            <input class="form-control" required type="file" name="videoFile"
+                                                class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Fechar</button>
+                                    <button type="submit" class="btn btn-success">Cadastrar</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODAL DELETE VIDEO -->
+            <div class="modal fade" id="videoDeleteModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <input id="videoIdForRemove" type="text" value="" hidden>
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Excluir vídeo</h5>
+                        </div>
+                        <div class="modal-body">
+                            O vídeo será excluído permanentamente, realmente deseja excluir?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                            <button id="btnDeleteVideoModal" href="#" type="button" class="btn btn-danger"
+                                data-bs-dismiss="modal">Excluir</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODAL logout -->
+            <div class="modal fade" id="logoutModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Sair da conta</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <span>
+                                Você realmente deseja sair da conta?
+                            </span>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                            <a href="/admin/logout" type="submit" class="btn btn-danger">Sair</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- bootstrap -->
+            <script src="/bootstrap/js/bootstrap.min.js"></script>
+
+            <!-- JS GLOBAL -->
+            <script src="/scripts/global.js"></script>
+
+            <!-- JS DA PÁGINA -->
+            <script src="/scripts/admin/home.js"></script>
+</body>
+
+</html>

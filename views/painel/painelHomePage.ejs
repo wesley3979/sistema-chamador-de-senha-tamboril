@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Chamador de Senha</title>
+
+    <!-- JQUERY -->
+    <script src="/jquery/jquery-3.6.1.min.js"></script>
+
+    <!-- bootstrap -->
+    <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!--google fonts-->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+
+    <link href="/styles/painel/painel.css" rel="stylesheet" />
+    <style>
+        #cardUbs:hover {
+            -webkit-transform: scale(1.07);
+            -moz-transform: scale(1.07);
+            -o-transform: scale(1.07);
+            -ms-transform: scale(1.07);
+            transform: scale(1.07);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid background">
+        <div class="d-flex justify-content-center align-items-center" style="height: 100vh" hidden>
+            <div class="h-100 row w-100 d-flex justify-content-center p-3">
+                <% for( let index=0; index < ubs.length; index++ ) { %>
+                    <a href="http://tamboril.cesistemas.app.br:3000/painel/<%= ubs[index].id %> " id="cardUbs"
+                        class="h-25 w-25 bg-light d-flex justify-content-center d-flex align-items-center shadow m-2"
+                        style="border-radius: 15px; text-decoration: none;">
+                        <h2 class="text-center fw-bold" style="font-size: 2rem; color: #0080c1;">
+                            <%= ubs[index].Nome %>
+                        </h2>
+                    </a>
+                    <% } %>
+            </div>
+        </div>
+    </div>
+
+    <!-- bootstrap -->
+    <script src="/bootstrap/js/bootstrap.min.js"></script>
+
+    <!-- JS GLOBAL -->
+    <script src="/scripts/global.js"></script>
+</body>
+
+</html>

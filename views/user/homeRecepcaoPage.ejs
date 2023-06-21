@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>GERENCIADOR DE ATENDIMENTO</title>
+
+    <!-- Custom fonts for this template-->
+    <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+
+    <!-- Custom styles for this template-->
+    <link href="/styles/user/sb-admin-2.min.css" rel="stylesheet">
+</head>
+
+<body id="page-top">
+    <%- include("../partialViews/toastNotifications"); %>
+        <%- include("../partialViews/spinner"); %>
+
+            <input id="userSetorId" type="hidden" value="<%=user.Setor.id%>">
+            <input id="userUbsId" type="hidden" value="<%=user.Setor.UbsId%>">
+            <input id="userId" type="hidden" value="<%=user.id%>">
+
+            <!-- Page Wrapper -->
+            <div id="wrapper">
+
+                <!-- Content Wrapper -->
+                <div id="content-wrapper" class="d-flex flex-column">
+
+                    <!-- Main Content -->
+                    <div id="content">
+
+                        <!-- Topbar -->
+                        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                            <a href="">
+                                <img src="../img/logo-site.png" width="160rem" height="60rem">
+                            </a>
+
+                            <!-- Topbar Navbar -->
+                            <ul class="navbar-nav ml-auto">
+
+                                <!-- Nav Item - Search Dropdown (Visible Only XS) -->
+                                <li class="nav-item dropdown no-arrow d-sm-none">
+                                    <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i class="fas fa-search fa-fw"></i>
+                                    </a>
+                                    <!-- Dropdown - Messages -->
+                                    <div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in"
+                                        aria-labelledby="searchDropdown">
+                                        <form class="form-inline mr-auto w-100 navbar-search">
+                                            <div class="input-group">
+                                                <input type="text" class="form-control bg-light border-0 small"
+                                                    placeholder="Search for..." aria-label="Search"
+                                                    aria-describedby="basic-addon2">
+                                                <div class="input-group-append">
+                                                    <button class="btn btn-primary" type="button">
+                                                        <i class="fas fa-search fa-sm"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </li>
+
+                                <div class="topbar-divider d-none d-sm-block"></div>
+
+                                <!-- Nav Item - User Information -->
+                                <li class="nav-item dropdown no-arrow">
+                                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <span id="username" class="mr-2 d-none d-lg-inline text-gray-600 small">
+                                            <%=user.Login%>
+                                        </span>
+                                        <img class="img-profile rounded-circle" src="/icons/undraw_profile.svg">
+                                    </a>
+                                    <!-- Dropdown - User Information -->
+                                    <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                                        aria-labelledby="userDropdown">
+                                        <a class="dropdown-item" href="#" data-toggle="modal"
+                                            data-target="#editMyUserModal">
+                                            <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                                            Alterar nome de usuário
+                                        </a>
+                                        <a class="dropdown-item" href="#" data-toggle="modal"
+                                            data-target="#editMyPasswordModal">
+                                            <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
+                                            Alterar senha
+                                        </a>
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item" href="#" data-toggle="modal"
+                                            data-target="#logoutModal">
+                                            <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                            Encerrar Atendimento
+                                        </a>
+                                    </div>
+                                </li>
+
+                            </ul>
+
+                        </nav>
+                        <!-- End of Topbar -->
+
+                        <!-- Begin Page Content -->
+                        <div class="container-fluid">
+
+                            <!-- Content Row -->
+                            <div class="row">
+
+                                <!-- Pending Requests Card Example -->
+                                <div class="col-xl-6 col-md-12 mb-8">
+                                    <div class="card border-left-warning shadow h-100 py-2">
+                                        <div class="card-body">
+                                            <div class="row no-gutters align-items-center">
+                                                <div class="col mr-2">
+                                                    <div
+                                                        class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                                        Quantidade de senhas pendentes (Não chamadas)</div>
+                                                    <div id="quantidadeSenhaPendente"
+                                                        class="h5 mb-0 font-weight-bold text-gray-800">0</div>
+                                                </div>
+                                                <div class="col-auto">
+                                                    <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-xl-6 col-md-12 mb-8">
+                                    <div class="card border-left-success shadow h-100 py-2">
+                                        <div class="card-body">
+                                            <div class="row no-gutters align-items-center">
+                                                <div class="col mr-2">
+                                                    <div
+                                                        class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                                        Quantidade Pacientes atendidos hoje</div>
+                                                    <div id="quantidadeSenhaFinalizada"
+                                                        class="h5 mb-0 font-weight-bold text-gray-800">0</div>
+                                                </div>
+                                                <div class="col-auto">
+                                                    <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="col-xl-6 col-md-12 mb-8">
+                                <div class="mt-4 mb-2"></div>
+                                <a href="#" class="btn btn-success btn-icon-split" data-toggle="modal"
+                                    data-target="#cadastrarSenhaModal">
+                                    <span class="icon text-white-50">
+                                        <i class="fas fa-plus"></i>
+                                    </span>
+                                    <span class="text">Cadastrar senha</span>
+                                </a>
+                                <div class="mt-2 mb-4"></div>
+                            </div>
+
+                            <!-- Page Heading -->
+                            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                                <h1 class="h3 mb-0 text-gray-800">Filas de Atendimento</h1>
+                                <a href="#" id="btnBaixarRelatorio"
+                                    class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
+                                        class="fas fa-download fa-sm text-white-50"></i> Baixar relatório</a>
+                            </div>
+
+                            <!-- Content Row -->
+                            <div class="row">
+
+                                <!-- Content Column -->
+                                <div class="col-lg-12 mb-4">
+
+                                    <!-- Atendimento -->
+                                    <div class="card shadow mb-4">
+                                        <div class="card-header py-3">
+                                            <h6 class="m-0 font-weight-bold text-primary">
+                                                Fila de Atendimento
+                                            </h6>
+                                        </div>
+                                        <div class="card-body">
+
+                                            <!-- DataTales Example -->
+                                            <div class="card shadow mb-4">
+                                                <div class="card-body">
+                                                    <div class="table-responsive">
+                                                        <table class="table table-bordered table-striped"
+                                                            id="tableFilaAtendimento" width="100%" cellspacing="0">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th></th>
+                                                                    <th>Número</th>
+                                                                    <th>Paciente</th>
+                                                                    <th>Setor</th>
+                                                                    <th>Prioritária</th>
+                                                                    <th>Situação</th>
+                                                                    <th>Ações</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                    <!-- histórico Atendimento -->
+                                    <div class="card shadow mb-4">
+                                        <div class="card-header py-3">
+                                            <h6 class="m-0 font-weight-bold text-primary">
+                                                Pacientes atendidos
+                                            </h6>
+                                        </div>
+                                        <div class="card-body">
+
+                                            <!-- DataTales Example -->
+                                            <div class="card shadow mb-4">
+                                                <div class="card-body">
+                                                    <div class="table-responsive">
+                                                        <table class="table table-bordered table-striped"
+                                                            id="tableHistoricoAtendimento" width="100%" cellspacing="0">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th></th>
+                                                                    <th>Número</th>
+                                                                    <th>Paciente</th>
+                                                                    <th>Setor</th>
+                                                                    <th>Prioritária</th>
+                                                                    <th>Situação</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <!-- End of Main Content -->
+
+                        <div id="FilaAtendimentoToPdf">
+                            <h2 id="title_pdf" style="margin-bottom: 10px;">RELATÓRIO GERAL DE ATENDIMENTO</h2>
+
+                            <dl style="margin-bottom: 25px;">
+                                <dt>UBS: <%=user.Setor.Ub.Nome%>
+                                </dt>
+                                <dt id="datePdf">DATA: 00/00/0000</dt>
+                                <dt id="totalPdf">DATA: 00/00/0000</dt>
+                            </dl>
+
+                            <table id="TableFilaAtendimentoToPdf" class="table table-striped">
+                                <colgroup>
+                                    <col width="10%">
+                                    <col width="40%">
+                                    <col width="30%">
+                                    <col width="20%">
+                                </colgroup>
+                                <thead>
+                                    <tr class='warning'>
+                                        <th>N°</th>
+                                        <th>Nome</th>
+                                        <th>Profissional</th>
+                                        <th>Setor</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Footer -->
+                        <footer class="sticky-footer bg-white">
+                            <div class="container my-auto">
+                                <div class="copyright text-center my-auto">
+                                    <span>Copyright &copy; 2023 C e Assessoria e Sistemas.</span>
+                                </div>
+                            </div>
+                        </footer>
+                        <!-- End of Footer -->
+
+                    </div>
+                    <!-- End of Content Wrapper -->
+
+                </div>
+                <!-- End of Page Wrapper -->
+
+                <!-- Scroll to Top Button-->
+                <a class="scroll-to-top rounded" href="#page-top">
+                    <i class="fas fa-angle-up"></i>
+                </a>
+
+                <!-- Logout Modal-->
+                <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Deseja sair da sua conta?</h5>
+                                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">×</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">Selecione a opção "Sair" para finalizar sua sessão de atendimento.
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary" type="button" data-dismiss="modal">Fechar</button>
+                                <a class="btn btn-danger" href="/user/logout">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    Sair
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CADASTRAR SENHA Modal-->
+                <div class="modal fade" id="cadastrarSenhaModal" tabindex="-1" role="dialog"
+                    aria-labelledby="cadastrarSenhaLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="cadastrarSenhaLabel">
+                                    Cadastrar Senha
+                                </h5>
+                                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">×</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="cadastrarSenhaForm">
+                                    <div class="row">
+                                        <div class="col-12 mb-3">
+                                            <label for="nomePaciente" class="col-form-label">
+                                                <i class="fas fa-hospital-user"></i>
+                                                Nome do paciente:
+                                            </label>
+                                            <input type="name" required class="form-control" id="nomePaciente">
+                                        </div>
+                                        <div class="col-12 mb-3">
+                                            <div class="form-group">
+                                                <label for="setorSelect" class="col-form-label">
+                                                    <i class="fas fa-clinic-medical"></i>
+                                                    Setor:
+                                                </label>
+                                                <select class="form-control" required id="setorSelect">
+                                                    <option value="">selecione</option>
+
+                                                    <% setorList.forEach(setor=> { %>
+                                                        <option value="<%=setor.id%>">
+                                                            <%=setor.Nome%>
+                                                        </option>
+                                                        <% }) %>
+
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 mb-3">
+                                            <div class="form-group form-check">
+                                                <input type="checkbox" class="form-check-input" id="preferencial">
+                                                <label class="form-check-label" for="preferencial">Senha
+                                                    Preferêncial</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-dismiss="modal">Fechar</button>
+                                        <button class="btn btn-success" type="submit">
+                                            <i class="fas fa-plus"></i>
+                                            Cadastrar
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- EDIT MY PASSWORD MODAL -->
+                <div class="modal fade" id="editMyPasswordModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Editar senha</h5>
+                                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">×</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="editMyPasswordForm">
+                                    <div class="row">
+                                        <div class="col-12 mb-3">
+                                            <label for="oldPassword" class="col-form-label">Senha antiga:</label>
+                                            <input type="password" required class="form-control" id="oldPassword">
+                                        </div>
+                                        <div class="col-6 mb-3">
+                                            <label for="newPassword" class="col-form-label">Nova Senha:</label>
+                                            <input type="password" required class="form-control" id="newPassword">
+                                        </div>
+                                        <div class="col-6 mb-3">
+                                            <label for="confirmNewPassword" class="col-form-label">Confirme a nova
+                                                senha:</label>
+                                            <input type="password" required class="form-control"
+                                                id="confirmNewPassword">
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-dismiss="modal">Fechar</button>
+                                        <button class="btn btn-primary" type="submit">
+                                            <i class="fas fa-pen"></i>
+                                            Editar
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- EDIT MY USER MODAL -->
+                <div class="modal fade" id="editMyUserModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Editar meu usuário</h5>
+                                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">×</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="editMyUserForm">
+                                    <input type="text" id="myUserIdForEdit" hidden>
+                                    <div class="row">
+                                        <div class="col-6 mb-3">
+                                            <label for="myUserName" class="col-form-label">Nome:</label>
+                                            <input type="text" required class="form-control" id="myUserName"
+                                                value="<%=user.Login.split('.')[1]%>">
+                                        </div>
+                                        <div class="col-6 mb-3">
+                                            <label for="myUserLastName" class="col-form-label">Sobrenome:</label>
+                                            <input type="text" required class="form-control" id="myUserLastName"
+                                                value="<%=user.Login.split('.')[2]%>">
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-dismiss="modal">Fechar</button>
+                                        <button class="btn btn-primary" type="submit">
+                                            <i class="fas fa-pen"></i>
+                                            Editar
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MODAL USER CREDENTIAL -->
+                <div class="modal fade" id="userCredentialModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Informações cadastradas:</h5>
+                            </div>
+                            <div class="modal-body">
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MODAL IMPRIMIR -->
+                <div class="modal fade" id="imprimirModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Imprimir senha</h5>
+                                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">×</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <span>
+                                    Deseja imprimir a senha?
+                                </span>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                                <button id="btnPrinter" class="btn btn-success" type="submit">
+                                    <i class="fas fa-print"></i>
+                                    Imprimir
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- HTML PARA IMPRESSÃO -->
+                <div id="imprimirDiv" class="" style="margin: 2%; width: 2.5em;">
+                    <div id="imprimir" hidden="true" style="color: black; font-weight: bold">
+                        <div class="d-flex justify-content-start">
+                            <img src="../img/logo-site.png" width="300em">
+                        </div>
+                        <div class="row d-flex justify-content-start mt-2" style="font-size:2em;">
+                            <div class="col-12 d-flex justify-content-start">
+                                <span class="fw-bold">Nome: </span>
+                            </div>
+                            <div class="col-12 d-flex justify-content-start"
+                                style="font-size:0.8em; word-wrap: break-word; width: 3cm;">
+                                <span class="text-start" id="nomeImpressao"></span>
+                            </div>
+                        </div>
+                        <div class="row d-flex justify-content-start mt-2" style="font-size:2em;">
+                            <div class="col-4 d-flex justify-content-start">
+                                <span class="fw-bold">Setor: </span>
+                            </div>
+                            <div class="col-8 d-flex justify-content-start"
+                                style="font-size:1em; word-wrap: break-word; width: 50%;">
+                                <span class="text-start" id="setorImpressao"></span>
+                            </div>
+                        </div>
+                        <div class="row d-flex justify-content-start mt-2" style="font-size:2em;">
+                            <div class="col-2 d-flex justify-content-start">
+                                <span class="fw-bold">N°: </span>
+                            </div>
+                            <div class="col-10 d-flex justify-content-start"
+                                style="font-size:1em; word-wrap: break-word; width: 3cm;">
+                                <span class="text-start" id="senhaImpressao"></span>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-start ms-3" style="margin: 6%;">
+                            <img src="../img/qrcode-site.jpg" width="300em">
+                        </div>
+                        <div class="d-flex justify-content-start" style="font-size:2.5em;">
+                            <a href="#" class="text-start" style="font-size:0.6em;">www.tamboril.ce.gov.br</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MODAL CANCELAR SENHA -->
+                <div class="modal fade" id="cancelarSenhaModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Deseja cancelar essa Senha?</h5>
+                                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">×</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="cancelarSenhaForm">
+                                    <input type="hidden" id="senhaIdForCancel" value="">
+                                    <span>
+                                        Após a senha ser cancelada ela não será visível para os outros setores e nem
+                                        será chamada no Painel.
+                                    </span>
+                                    <div class="modal-footer mt-2">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-dismiss="modal">Fechar</button>
+                                        <button class="btn btn-danger" type="submit">
+                                            <i class="fas fa-times"></i>
+                                            Cancelar
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bootstrap core JavaScript-->
+                <script src="/vendor/jquery/jquery.min.js"></script>
+                <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+                <!-- Core plugin JavaScript-->
+                <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
+
+                <!-- Custom scripts for all pages-->
+                <script src="scripts/user/sb-admin-2.min.js"></script>
+
+                <!-- JS GLOBAL -->
+                <script src="/scripts/global.js"></script>
+
+                <!-- SOCKET.IO -->
+                <script src="/vendor/socketIO/socket.io.min.js"></script>
+
+                <!-- PLUGIN PARA IMPRIMIR HTML -->
+                <script src="/scripts/util/printThis.js"></script>
+
+                <!-- PLUGIN PARA CONVERTER HTML EM PDF -->
+                <script src="/vendor/jspdf/jspdf.js"></script>
+
+                <!-- JS DA PÁGINA -->
+                <script src="/scripts/user/homeRecepcao.js"></script>
+
+</body>
+
+</html>

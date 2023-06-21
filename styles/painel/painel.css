@@ -1,0 +1,35 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins&display=swap");
+
+body {
+  font-family: Poppins, Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #0080c1;
+}
+
+div.background::after {
+  content: "";
+  display: block;
+  position: absolute;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  background-image: url(/img/doctor-background.jpg);
+  background-size: cover;
+  opacity: 0.15;
+  top: 0;
+  bottom: 0;
+  right: 0;
+}
+
+.relogio {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  border-radius: 0.9rem;
+  background: #ffcd00;
+  font: bold 50px;
+  font-size: 5rem;
+  color: white;
+}

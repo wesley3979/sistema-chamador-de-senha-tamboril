@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" href="/img/admin.png" />
+  <title>Sistema chamador de senha</title>
+
+  <!-- JQUERY -->
+  <script src="/jquery/jquery-3.6.1.min.js"></script>
+
+  <!-- bootstrap -->
+  <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+
+  <!--google fonts-->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+
+  <!-- CSS GLOBAL -->
+  <link href="/styles/global.css" rel="stylesheet" />
+
+  <!-- CSS DA PÁGINA -->
+  <link href="/styles/admin/login.css" rel="stylesheet" />
+</head>
+
+<body class="text-center">
+  <%- include("../partialViews/toastNotifications"); %>
+    <%- include("../partialViews/spinner"); %>
+      <main class="form-signin">
+        <form id="loginForm" action="/admin/login" method="post">
+
+          <h1 class="f-bold h3 mb-3 fw-normal text-center"><img src="../icons/gear-fill.svg" width="40rem"
+              height="110rem"> MANUTENÇÃO</h1>
+          <div class="form-floating">
+            <input type="user" name="login" class="form-control" id="login" placeholder="Usuário" x />
+            <label for="login">Usuário</label>
+          </div>
+          <div class="form-floating">
+            <input type="password" name="password" class="form-control" id="password" placeholder="Password" />
+            <label for="password">Senha</label>
+          </div>
+
+          <button class="w-100 btn btn-lg btn-success mb-2" type="submit">
+            Entrar
+          </button>
+
+          <div class="col-12 mt-2 d-flex justify-content-center">
+            <img title="Logo" src="/img/logo-site.png" alt="Logo" height="150rem">
+          </div>
+        </form>
+      </main>
+
+      <script src="/bootstrap/js/bootstrap.min.js"></script>
+
+      <!-- JS GLOBAL -->
+      <script src="/scripts/global.js"></script>
+
+      <!-- JS DA PÁGINA -->
+      <script src="/scripts/admin/login.js"></script>
+</body>
+
+</html>
