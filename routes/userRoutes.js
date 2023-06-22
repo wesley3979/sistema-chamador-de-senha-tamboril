@@ -16,6 +16,7 @@ routes.post("/insert", checkCredentialsAdmin, userController.insert);
 routes.delete("/remove/:id", checkCredentialsAdmin, userController.remove);
 routes.put("/update", checkCredentialsAdmin, userController.update);
 routes.post("/changeMyPassword", checkCredentials, userController.changeMyPassword);
+routes.post("/changeSetor", checkCredentials, userController.changeMySetor);
 routes.put("/myUpdate", checkCredentials, userController.update);
 routes.get("/login", userController.viewLogin);
 routes.post("/login", userController.login);

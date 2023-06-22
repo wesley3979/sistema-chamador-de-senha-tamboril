@@ -119,6 +119,39 @@ app.post('/chamarSenha', async (req, res) => {
     }
 });
 
+app.post('/chamarSenhaById/:id', async (req, res) => {
+    try {
+        const senhaAntiga = await Senha.findOne(
+            {
+                where:
+                    { Status: 2, SetorId: req.session.userSCS.SetorId }
+            },
+        );
+
+        if (senhaAntiga) {
+            senhaAntiga.Status = 3
+            await senhaAntiga.save()
+        }
+
+        const senha = await Senha.findByPk(req.params.id, { include: [Setor] });
+
+        if (!senha)
+            return res.status(200).json({ status: "false", message: "Não há pacientes para serem chamados." })
+
+        senha.Status = 2
+
+        await senha.save()
+
+        enviaSenhasPendentes()
+        enviaSenhaPainel(senha)
+
+        return res.status(200).json({ status: "success", message: "Paciente chamado", senha })
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ status: "false", message: "Não foi possível realizar essa operação, tente novamente mais tarde" })
+    }
+});
+
 app.post('/cancelarSenha', async (req, res) => {
     try {
         const { senhaId } = req.body
@@ -135,6 +168,7 @@ app.post('/cancelarSenha', async (req, res) => {
         senha.save()
 
         enviaSenhasPendentes()
+        enviaSenhasCanceladas()
 
         return res.status(200).json({ status: "success", message: "Senha cancelada com sucesso." })
 
@@ -235,6 +269,36 @@ const enviaSenhasAtendidas = async () => {
     }
 }
 
+const enviaSenhasCanceladas = async () => {
+    try {
+
+        const date = new Date();
+        date.setHours(0, 0, 0, 0);
+
+        const senhas = await Senha.findAll(
+            {
+                where:
+                {
+                    Status: 4,
+                    updatedAt: {
+                        [Op.gte]: date,
+                    }
+                },
+                include: [Setor],
+                order: [
+                    ['Preferencial', 'DESC'],
+                    ['createdAt', 'ASC'],
+                    ['Numero', 'ASC'],
+                ],
+            },
+        );
+
+        io.emit('senhas canceladas', senhas);
+    } catch (err) {
+        console.log(err);
+    }
+}
+
 const enviaSenhaPainel = async (senha) => {
     try {
         io.emit('painel', senha);
@@ -257,6 +321,7 @@ function addZeroes(num, len) {
 io.on('connection', (socket) => {
     enviaSenhasPendentes()
     enviaSenhasAtendidas()
+    enviaSenhasCanceladas()
 
     socket.on('disconnect', () => { });
 });

@@ -197,7 +197,7 @@ class UserController {
         if(user.IsMaster)
             res.render("user/homeRecepcaoPage", { user, setorList });
         else
-            res.render("user/homePage", { user, todaySenhas, atendimentoAtual });
+            res.render("user/homePage", { user, setorList, todaySenhas, atendimentoAtual });
     }
 
     async getUsers(req, res){
@@ -329,6 +329,34 @@ class UserController {
 
             return res.status(200).json({ status: "success", message: "Senha alterada com sucesso" })
             
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json({ status: "false", message: "Não foi possível realizar essa operação, tente novamente mais tarde" })
+        }
+    }
+
+    async changeMySetor(req, res){
+        try{
+            const { setorId } = req.body
+
+            if(!setorId)
+                return res.status(200).json({ status: "false", message: "Setor inválido" })
+
+            let setor = await Setor.findByPk(setorId)
+
+            if (!setor)
+                return res.status(200).json({ status: "false", message: "Setor inválido" })
+
+            let user = await User.findByPk(req.session.userSCS.id)
+
+            if (!user)
+                return res.status(200).json({ status: "false", message: "Usuário inválido" })
+
+            user.SetorId = setor.id
+    
+            await user.save()
+
+            return res.status(200).json({ status: "success", message: "Setor alterado com sucesso" })
         } catch (error) {
             console.log(error)
             return res.status(500).json({ status: "false", message: "Não foi possível realizar essa operação, tente novamente mais tarde" })

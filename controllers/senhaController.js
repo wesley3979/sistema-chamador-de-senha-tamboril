@@ -144,6 +144,20 @@ class UserController {
             return res.status(500).json({ status: "false", message: "Não foi possível realizar essa operação, tente novamente mais tarde" })
         }
     }
+
+    async getById(req, res){
+        try{
+            const senha = await Senha.findByPk(req.params.id, { include: [ Setor ]});
+
+            if(!senha)
+                return res.status(200).json({ status: "false", message: "Senha inválida" })
+
+            return res.status(200).json({ status: "success", senha })
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json({ status: "false", message: "Não foi possível realizar essa operação, tente novamente mais tarde" })
+        }
+    }
 }
 
 function addZeroes(num, len) {

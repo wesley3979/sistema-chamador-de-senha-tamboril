@@ -9,6 +9,7 @@ const routes = Router();
 routes.post("/insert", checkCredentials, senhaController.insert);
 routes.put("/cancel", checkCredentials, senhaController.cancel);
 routes.get("/getSenhasAtivas", checkCredentials,  senhaController.getSenhasAtivas);
+routes.get("/getSenhaById/:id", senhaController.getById);
 routes.get("/getSenhasPorSessaoAtivas", checkCredentials,  senhaController.getSenhasPorSessaoAtivas);
 routes.get("/getSenhasChamadas", senhaController.getSenhasChamadas);
 routes.post("/encerrarSenha/:id", senhaController.encerrarSenha);
