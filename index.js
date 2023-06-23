@@ -218,6 +218,25 @@ app.post('/regerarSenha', async (req, res) => {
     }
 });
 
+app.post('/cancelarSenhaAtual', async (req, res) => {
+    try {
+        const { senhaId } = req.body
+
+        const senha = await Senha.findByPk(senhaId, { include: [Setor] });
+        if (!senha)
+            return res.status(200).json({ status: "false", message: "Não há atendimentos para serem cancelados." })
+
+        senha.Status = 4
+        await senha.save()
+
+        return res.status(200).json({ status: "success", message: "Atendimento finalizado", senha })
+
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ status: "false", message: "Erro interno no servidor." })
+    }
+});
+
 const enviaSenhasPendentes = async () => {
     try {
         const senhas = await Senha.findAll(

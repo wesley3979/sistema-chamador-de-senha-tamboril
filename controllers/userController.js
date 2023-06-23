@@ -353,6 +353,7 @@ class UserController {
                 return res.status(200).json({ status: "false", message: "Usuário inválido" })
 
             user.SetorId = setor.id
+            req.session.userSCS.SetorId = setor.id
     
             await user.save()
 

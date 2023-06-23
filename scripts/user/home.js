@@ -3,10 +3,14 @@ $(document).ready(function () {
   EditMyPassword();
   EditMyUser();
   RegerarSenha();
+  CancelarSenhaAtual();
   FinalizarSenha();
   BaixarRelatório();
 
   $("#FilaAtendimentoToPdf").hide();
+
+  MoveBotaoChamarSenhaParaTopoEmCelular();
+  $(window).resize(MoveBotaoChamarSenhaParaTopoEmCelular);
 });
 
 const socket = io();
@@ -31,7 +35,9 @@ socket.on("senhas pendentes", (senhas) => {
                     </td>
                     <td>
                         <div class="col-auto">
-                            <a title="Cancelar senha" onClick="cancelarSenha(${senha.id})" href="" style="text-decoration: none;">
+                            <a title="Cancelar senha" onClick="cancelarSenha(${
+                              senha.id
+                            })" href="" style="text-decoration: none;">
                                 <i class="fas fa-times" style="color: #dc3545;"></i>
                             </a>
                         </div>
@@ -83,7 +89,7 @@ socket.on("senhas atendidas", (senhas) => {
                     <td>
                         <div class="col-auto">
                             <a title="Chamar senha novamente" onClick="chamarSenhaById(${
-                            senha.id
+                              senha.id
                             })" href="" style="text-decoration: none;">
                                 <i class="fas fa-arrow-right" style="color: #148D62;"></i>
                             </a>
@@ -121,22 +127,22 @@ socket.on("senhas atendidas", (senhas) => {
 });
 
 socket.on("senhas canceladas", (senhas) => {
-    $("#tableHistoricoAtendimentoCancelados tbody").html("");
-  
-    username = $("#username").html().split(".");
-  
-    username[1] = username[1].replace(/(^\w{1})|(\s+\w{1})/g, (letra) =>
-      letra.toUpperCase()
-    );
-    username[2] = username[2].replace(/(^\w{1})|(\s+\w{1})/g, (letra) =>
-      letra.toUpperCase()
-    );
-  
-    let index = 0;
-    senhas.forEach((senha) => {
-      if (senha.Setor.id == $("#userSetorId").val()) {
-        $("#tableHistoricoAtendimentoCancelados tbody").append(
-          `<tr>
+  $("#tableHistoricoAtendimentoCancelados tbody").html("");
+
+  username = $("#username").html().split(".");
+
+  username[1] = username[1].replace(/(^\w{1})|(\s+\w{1})/g, (letra) =>
+    letra.toUpperCase()
+  );
+  username[2] = username[2].replace(/(^\w{1})|(\s+\w{1})/g, (letra) =>
+    letra.toUpperCase()
+  );
+
+  let index = 0;
+  senhas.forEach((senha) => {
+    if (senha.Setor.id == $("#userSetorId").val()) {
+      $("#tableHistoricoAtendimentoCancelados tbody").append(
+        `<tr>
                       <th scope="row">${index + 1}°</th>
                       <td>${senha.Numero}</td>
                       <td>${senha.Paciente}</td>
@@ -148,31 +154,31 @@ socket.on("senhas canceladas", (senhas) => {
                       <td>
                           <div class="col-auto">
                               <a title="Chamar senha novamente" onClick="chamarSenhaById(${
-                              senha.id
+                                senha.id
                               })" href="" style="text-decoration: none;">
                                   <i class="fas fa-arrow-right" style="color: #148D62;"></i>
                               </a>
                           </div>
                       </td>
                   </tr>`
-        );
-  
-        index++;
-      }
-    });
-  
-    var rowCount = $("#tableHistoricoAtendimentoCancelados tbody tr").length;
-  
-    if (rowCount == 0) {
-      $("#tableHistoricoAtendimentoCancelados tbody").append(
-        `<tr class="text-center">
+      );
+
+      index++;
+    }
+  });
+
+  var rowCount = $("#tableHistoricoAtendimentoCancelados tbody tr").length;
+
+  if (rowCount == 0) {
+    $("#tableHistoricoAtendimentoCancelados tbody").append(
+      `<tr class="text-center">
                   <td colspan="6">Não há atendimentos cancelados</td>
               </tr>`
-      );
-    }
-  
-    //table for pdf
-    $("#totalPdf").html(`Número de atendimentos: ${rowCount}`);
+    );
+  }
+
+  //table for pdf
+  $("#totalPdf").html(`Número de atendimentos: ${rowCount}`);
 });
 
 function setIdModal(id) {
@@ -311,10 +317,13 @@ function ChamarSenha() {
                                 </div>
                             </div>
                             <div class="col-auto">
-                                <a href="#" title="Chamar novamente" id="btnRegerarSenha" data-id="${result.senha.id}" style="text-decoration: none;">
+                                <a href="#" title="Cancelar atendimento" id="btnCancelarSenhaAtual" data-id="${result.senha.id}" style="text-decoration: none;">
+                                    <i class="fas fa-times fa-2x" style="color: #DC3546"></i>
+                                </a>
+                                <a class="mx-3" href="#" title="Chamar novamente" id="btnRegerarSenha" data-id="${result.senha.id}" style="text-decoration: none;">
                                     <i class="fas fa-sync-alt fa-2x" style="color: #ffd43b"></i>
                                 </a>
-                                <a class="mx-3" href="#" title="Encerrar Atendimento" id="btnEncerrarSenha" data-id="${result.senha.id}" style="text-decoration: none;">
+                                <a href="#" title="Encerrar Atendimento" id="btnEncerrarSenha" data-id="${result.senha.id}" style="text-decoration: none;">
                                     <i class="fas fa-check fa-2x" style="color: #18a974"></i>
                                 </a>
                             </div>
@@ -332,6 +341,9 @@ function ChamarSenha() {
           }
 
           $("#atendimentoAtual").fadeIn();
+
+          $("#btnCancelarSenhaAtual").off("click");
+          CancelarSenhaAtual();
 
           $("#btnRegerarSenha").off("click");
           RegerarSenha();
@@ -496,6 +508,51 @@ function RegerarSenha() {
   });
 }
 
+function CancelarSenhaAtual() {
+  $("#btnCancelarSenhaAtual").click(function () {
+    loadPageAnimation(true);
+    var formData = {
+      senhaId: $(this).attr("data-id"),
+    };
+
+    $.ajax({
+      type: "POST",
+      url: "/cancelarSenhaAtual",
+      data: formData,
+      error: function (error) {
+        loadToastNotification(
+          "Erro interno, estamos solucionando o problema, tente novamente em instantes",
+          "danger"
+        );
+      },
+      success: function (result) {
+        if (result.status === "success") {
+          loadToastNotification("O atendimento foi cancelado", "success");
+
+          $("#atendimentoAtual").html(`
+          <div class="col mr-2">
+              <div class="text font-weight-bold text-success text-uppercase mb-1">
+                  Atendimento Atual
+              </div>
+              <div id="nomePacienteAtual" class="h5 mb-0 font-weight-bold text-gray-800">(Não há paciente em atendimento)</div>
+              <div id="senhaPacienteAtual" class="text-xs h5 mb-0 font-weight-bold text-gray-800"></div>
+          </div>
+  `);
+        } else if (result.status === "false") {
+          loadToastNotification(result.message, "danger");
+        } else {
+          loadToastNotification(
+            "Erro interno, estamos solucionando o problema, tente novamente em instantes",
+            "danger"
+          );
+        }
+      },
+    });
+
+    loadPageAnimation(false);
+  });
+}
+
 function FinalizarSenha() {
   $("#btnEncerrarSenha").click(function () {
     loadPageAnimation(true);
@@ -622,10 +679,13 @@ function chamarSenhaById(id) {
                                 </div>
                             </div>
                             <div class="col-auto">
-                                <a href="#" title="Chamar novamente" id="btnRegerarSenha" data-id="${result.senha.id}" style="text-decoration: none;">
+                                <a href="#" title="Cancelar atendimento" id="btnCancelarSenhaAtual" data-id="${result.senha.id}" style="text-decoration: none;">
+                                    <i class="fas fa-times fa-2x" style="color: #DC3546"></i>
+                                </a>
+                                <a class="mx-3" href="#" title="Chamar novamente" id="btnRegerarSenha" data-id="${result.senha.id}" style="text-decoration: none;">
                                     <i class="fas fa-sync-alt fa-2x" style="color: #ffd43b"></i>
                                 </a>
-                                <a class="mx-3" href="#" title="Encerrar Atendimento" id="btnEncerrarSenha" data-id="${result.senha.id}" style="text-decoration: none;">
+                                <a href="#" title="Encerrar Atendimento" id="btnEncerrarSenha" data-id="${result.senha.id}" style="text-decoration: none;">
                                     <i class="fas fa-check fa-2x" style="color: #18a974"></i>
                                 </a>
                             </div>
@@ -647,6 +707,9 @@ function chamarSenhaById(id) {
         $("#btnRegerarSenha").off("click");
         RegerarSenha();
 
+        $("#btnCancelarSenhaAtual").off("click");
+        CancelarSenhaAtual();
+
         $("#btnEncerrarSenha").off("click");
         FinalizarSenha();
       } else if (result.status === "false") {
@@ -663,36 +726,40 @@ function chamarSenhaById(id) {
   loadPageAnimation(false);
 }
 
-
 function cancelarSenha(id) {
-    loadPageAnimation(true)
+  loadPageAnimation(true);
 
-    var formData = {
-        senhaId: id
-    };
+  var formData = {
+    senhaId: id,
+  };
 
-    $.ajax({
-        type: 'POST',
-        url: "/cancelarSenha",
-        data: formData,
-        error: function (error) {
-            loadPageAnimation(false)
-            loadToastNotification("Erro interno, estamos solucionando o problema, tente novamente em instantes", "danger")
-        },
-        success: function (result) {
-            if (result.status === 'success') {
-                loadPageAnimation(false)
-                loadToastNotification(result.message, "success")
-
-            } else if (result.status === 'false') {
-                loadPageAnimation(false)
-                loadToastNotification(result.message, "danger")
-            } else {
-                loadPageAnimation(false)
-                loadToastNotification("Erro interno, estamos solucionando o problema, tente novamente em instantes", "danger")
-            }
-        }
-    });
+  $.ajax({
+    type: "POST",
+    url: "/cancelarSenha",
+    data: formData,
+    error: function (error) {
+      loadPageAnimation(false);
+      loadToastNotification(
+        "Erro interno, estamos solucionando o problema, tente novamente em instantes",
+        "danger"
+      );
+    },
+    success: function (result) {
+      if (result.status === "success") {
+        loadPageAnimation(false);
+        loadToastNotification(result.message, "success");
+      } else if (result.status === "false") {
+        loadPageAnimation(false);
+        loadToastNotification(result.message, "danger");
+      } else {
+        loadPageAnimation(false);
+        loadToastNotification(
+          "Erro interno, estamos solucionando o problema, tente novamente em instantes",
+          "danger"
+        );
+      }
+    },
+  });
 }
 
 function EditMyPassword() {
@@ -701,7 +768,7 @@ function EditMyPassword() {
 
     event.preventDefault();
 
-    console.log($("#setorIdForChange").val())
+    console.log($("#setorIdForChange").val());
     var formData = {
       setorId: $("#setorIdForChange").val(),
     };
@@ -727,6 +794,12 @@ function EditMyPassword() {
         }
       },
     });
-    
   });
+}
+
+function MoveBotaoChamarSenhaParaTopoEmCelular() {
+  var larguraTela = $(window).width();
+
+  if (larguraTela < 992)
+    $("#groupNextPassword").addClass("order-first");
 }
