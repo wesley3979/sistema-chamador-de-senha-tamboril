@@ -13,6 +13,8 @@ require("./db/conn");
 
 const Senha = require("./models/Senha");
 const Setor = require("./models/Setor");
+const Local = require("./models/Local");
+const User = require("./models/User");
 
 app.use(
     cookieSession({
@@ -77,6 +79,15 @@ app.post('/criarSenha', async (req, res) => {
 
 app.post('/chamarSenha', async (req, res) => {
     try {
+        const user = await User.findByPk(req.session.userSCS.id)
+
+        if(!user)
+            return res.status(200).json({ status: "false", message: "Usuário não logado." })
+
+        const local = await Local.findByPk(user.LocalId)
+
+        if(!local)
+            return res.status(200).json({ status: "false", message: "Local de atendimento não configurado, faça login novamente." })
 
         const senhaAntiga = await Senha.findOne(
             {
@@ -90,25 +101,79 @@ app.post('/chamarSenha', async (req, res) => {
             await senhaAntiga.save()
         }
 
-        const senha = await Senha.findOne(
+        //regra para chamar senha preferencial a cada duas senhas normais
+        const ultimasSenhasAtendidas = await Senha.findAll(
             {
                 where:
-                    { Status: 1, SetorId: req.session.userSCS.SetorId },
+                    { Status: 3, SetorId: req.session.userSCS.SetorId },
                 include: [Setor],
                 order: [
-                    ['Preferencial', 'DESC'],
-                    ['Numero', 'ASC'],
+                    ['updatedAt', 'DESC'],
                 ],
+                limit: 2
             },
         );
+
+        let chamarPreferencial = true;
+
+        ultimasSenhasAtendidas.forEach(e => {
+            if(e.Preferencial)
+                chamarPreferencial = false;
+        });
+
+        let senha = null;
+
+        if(chamarPreferencial){
+            senha = await Senha.findOne(
+                {
+                    where:
+                        { Status: 1, SetorId: req.session.userSCS.SetorId, Preferencial: true },
+                    include: [Setor],
+                    order: [
+                        ['Preferencial', 'DESC'],
+                        ['Numero', 'ASC'],
+                    ],
+                },
+            );
+
+            if(!senha){
+                senha = await Senha.findOne(
+                    {
+                        where:
+                            { Status: 1, SetorId: req.session.userSCS.SetorId, Preferencial: false },
+                        include: [Setor],
+                        order: [
+                            ['Numero', 'ASC'],
+                        ],
+                    },
+                );
+            }
+        }
+        else{
+            senha = await Senha.findOne(
+                {
+                    where:
+                        { Status: 1, SetorId: req.session.userSCS.SetorId },
+                    include: [Setor],
+                    order: [
+                        ['Numero', 'ASC'],
+                    ],
+                },
+            );
+        }
+        //final da regra
 
         if (!senha)
             return res.status(200).json({ status: "false", message: "Não há pacientes para serem chamados." })
 
         senha.Status = 2
-
+        senha.LocalId = local.id
+        
         await senha.save()
 
+        if(local)
+            senha.Setor.Nome = local.Nome
+        
         enviaSenhasPendentes()
         enviaSenhaPainel(senha)
 
@@ -121,6 +186,16 @@ app.post('/chamarSenha', async (req, res) => {
 
 app.post('/chamarSenhaById/:id', async (req, res) => {
     try {
+        const user = await User.findByPk(req.session.userSCS.id)
+
+        if(!user)
+            return res.status(200).json({ status: "false", message: "Usuário não logado." })
+
+        const local = await Local.findByPk(user.LocalId)
+
+        if(!local)
+            return res.status(200).json({ status: "false", message: "Local de atendimento não configurado, faça login novamente." })
+
         const senhaAntiga = await Senha.findOne(
             {
                 where:
@@ -139,10 +214,16 @@ app.post('/chamarSenhaById/:id', async (req, res) => {
             return res.status(200).json({ status: "false", message: "Não há pacientes para serem chamados." })
 
         senha.Status = 2
-
+        senha.LocalId = local.id
+        
         await senha.save()
 
+        if(local)
+        senha.Setor.Nome = local.Nome
+        
         enviaSenhasPendentes()
+        enviaSenhasAtendidas()
+        enviaSenhasCanceladas()
         enviaSenhaPainel(senha)
 
         return res.status(200).json({ status: "success", message: "Paciente chamado", senha })
@@ -169,6 +250,7 @@ app.post('/cancelarSenha', async (req, res) => {
 
         enviaSenhasPendentes()
         enviaSenhasCanceladas()
+        enviaSenhasAtendidas()
 
         return res.status(200).json({ status: "success", message: "Senha cancelada com sucesso." })
 
@@ -208,6 +290,11 @@ app.post('/regerarSenha', async (req, res) => {
         if (!senha)
             return res.status(200).json({ status: "false", message: "Não há pacientes para serem chamados." })
 
+        const local = await Local.findByPk(senha.LocalId)
+
+        if(local)
+            senha.Setor.Nome = local.Nome
+        
         if (senha.Status == 2)
             enviaSenhaPainel(senha)
 
@@ -228,6 +315,9 @@ app.post('/cancelarSenhaAtual', async (req, res) => {
 
         senha.Status = 4
         await senha.save()
+
+        enviaSenhasPendentes()
+        enviaSenhasCanceladas()
 
         return res.status(200).json({ status: "success", message: "Atendimento finalizado", senha })
 

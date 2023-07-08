@@ -6,8 +6,11 @@ $(document).ready(function () {
   CancelarSenhaAtual();
   FinalizarSenha();
   BaixarRelatório();
+  EditMyLocal();
 
   $("#FilaAtendimentoToPdf").hide();
+
+  $("#editMyLocalModal").modal("show");
 
   MoveBotaoChamarSenhaParaTopoEmCelular();
   $(window).resize(MoveBotaoChamarSenhaParaTopoEmCelular);
@@ -37,7 +40,7 @@ socket.on("senhas pendentes", (senhas) => {
                         <div class="col-auto">
                             <a title="Cancelar senha" onClick="cancelarSenha(${
                               senha.id
-                            })" href="" style="text-decoration: none;">
+                            })" href="#" style="text-decoration: none;">
                                 <i class="fas fa-times" style="color: #dc3545;"></i>
                             </a>
                         </div>
@@ -90,7 +93,7 @@ socket.on("senhas atendidas", (senhas) => {
                         <div class="col-auto">
                             <a title="Chamar senha novamente" onClick="chamarSenhaById(${
                               senha.id
-                            })" href="" style="text-decoration: none;">
+                            })" href="#" style="text-decoration: none;">
                                 <i class="fas fa-arrow-right" style="color: #148D62;"></i>
                             </a>
                         </div>
@@ -155,7 +158,7 @@ socket.on("senhas canceladas", (senhas) => {
                           <div class="col-auto">
                               <a title="Chamar senha novamente" onClick="chamarSenhaById(${
                                 senha.id
-                              })" href="" style="text-decoration: none;">
+                              })" href="#" style="text-decoration: none;">
                                   <i class="fas fa-arrow-right" style="color: #148D62;"></i>
                               </a>
                           </div>
@@ -762,20 +765,20 @@ function cancelarSenha(id) {
   });
 }
 
-function EditMyPassword() {
-  $("#editMySetorForm").submit(function (event) {
+function EditMyLocal() {
+  $("#editMyLocalForm").submit(function (event) {
     loadPageAnimation(true);
 
     event.preventDefault();
 
-    console.log($("#setorIdForChange").val());
+    console.log($("#localIdForChange").val());
     var formData = {
-      setorId: $("#setorIdForChange").val(),
+      localId: $("#localIdForChange").val(),
     };
 
     $.ajax({
       type: "POST",
-      url: "/user/changeSetor",
+      url: "/user/changeLocal",
       data: formData,
       error: function (error) {
         loadPageAnimation(false);
@@ -788,7 +791,8 @@ function EditMyPassword() {
         if (result.status === "success") {
           loadPageAnimation(false);
           loadToastNotification(result.message, "success");
-          window.location.reload();
+          $("#localAtendimentView").val("Atendimento " + result.local.Nome);
+          $("#editMyLocalModal").modal("hide");
         } else {
           loadToastNotification(result.message, "danger");
         }
@@ -800,6 +804,5 @@ function EditMyPassword() {
 function MoveBotaoChamarSenhaParaTopoEmCelular() {
   var larguraTela = $(window).width();
 
-  if (larguraTela < 992)
-    $("#groupNextPassword").addClass("order-first");
+  if (larguraTela < 992) $("#groupNextPassword").addClass("order-first");
 }

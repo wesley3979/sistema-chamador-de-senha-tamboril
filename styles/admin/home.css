@@ -26,7 +26,7 @@ div .show #userDeleteModal{
     filter: blur(1px);
 }
 
-#btnMeuUsuario, #btnSetores, #btnUbs, #btnUsuarios, #btnVideos{
+#btnMeuUsuario, #btnSetores, #btnUbs, #btnUsuarios, #btnVideos, #btnLocals{
     width: 100%;
     color: white
 }

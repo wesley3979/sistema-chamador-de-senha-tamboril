@@ -3,6 +3,7 @@ const User = require("../models/User");
 const Setor = require("../models/Setor");
 const Ubs = require("../models/Ubs");
 const Senha = require("../models/Senha");
+const Local = require("../models/Local");
 
 const Auth = require("../helpers/auth");
 const checkUserIsMaster = require('../helpers/checkUserIsMaster')
@@ -162,6 +163,9 @@ class UserController {
             { include: [{
                 model: Setor, include: [Ubs],
                 required: true
+            },{
+                model: Local,
+                required: false
             }] }
         );
 
@@ -194,10 +198,16 @@ class UserController {
             } 
         });
 
+        const localList = await Local.findAll({
+            where: { 
+                UbsId : setorUser.UbsId,
+            } 
+        });
+
         if(user.IsMaster)
             res.render("user/homeRecepcaoPage", { user, setorList });
         else
-            res.render("user/homePage", { user, setorList, todaySenhas, atendimentoAtual });
+            res.render("user/homePage", { user, setorList, todaySenhas, atendimentoAtual, localList });
     }
 
     async getUsers(req, res){
@@ -363,7 +373,35 @@ class UserController {
             return res.status(500).json({ status: "false", message: "Não foi possível realizar essa operação, tente novamente mais tarde" })
         }
     }
+
+    async changeMyLocal(req, res){
+        try{
+            const { localId } = req.body
+
+            if(!localId)
+                return res.status(200).json({ status: "false", message: "Local de atendimento inválido" })
+
+            let local = await Local.findByPk(localId)
+
+            if (!local)
+                return res.status(200).json({ status: "false", message: "Local de atendimento inválido" })
+
+            let user = await User.findByPk(req.session.userSCS.id)
+
+            if (!user)
+                return res.status(200).json({ status: "false", message: "Usuário inválido" })
+
+            user.LocalId = local.id
+            req.session.userSCS.LocalId = local.id
     
+            await user.save()
+
+            return res.status(200).json({ status: "success", message: "Local de atendimento alterado", local })
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json({ status: "false", message: "Não foi possível realizar essa operação, tente novamente mais tarde" })
+        }
+    }
 }
 
 module.exports = new UserController

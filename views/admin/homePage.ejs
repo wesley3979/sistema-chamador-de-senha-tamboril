@@ -44,7 +44,10 @@
                                 <a id="btnUbs" class="btn btn-success shadow">Unidades Básicas de Saúde</a>
                             </div>
                             <div class="col-12 mb-2 d-flex justify-content-center">
-                                <a id="btnSetores" class="btn btn-info shadow">Setores</a>
+                                <a id="btnSetores" class="btn btn-primary shadow">Setores</a>
+                            </div>
+                            <div class="col-12 mb-2 d-flex justify-content-center">
+                                <a id="btnLocals" class="btn btn-info shadow">Consultórios</a>
                             </div>
                             <div class="col-12 mb-2 d-flex justify-content-center">
                                 <a id="btnUsuarios" class="btn btn-warning shadow">Usuários</a>
@@ -299,6 +302,90 @@
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
                             <button id="btnDeleteSetorModal" href="#" type="button" class="btn btn-danger"
+                                data-bs-dismiss="modal">Excluir</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODAL LOCAL LIST -->
+            <div class="modal fade" id="modalLocalList" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Consultórios</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <table id="localListTable" class="table">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th class="col-5" scope="col">Consultório</th>
+                                        <th class="col-4" scope="col">UBS</th>
+                                        <th class="col-3" scope="col">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="modal-footer">
+                            <button id="btnAddLocal" type="button" class="btn btn-success">Adicionar consultório</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ADD LOCAL MODAL -->
+            <div class="modal fade" id="addLocalModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Cadastrar Consultório</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="createLocalForm">
+                                <div class="row">
+                                    <div class="col-12 mb-3">
+                                        <label for="ubsIdForAddLocal" class="col-form-label">Selecione a UBS:</label>
+                                        <select id="ubsIdForAddLocal" required class="form-select"
+                                            aria-label=".form-select-sm">
+                                            <option value="" selected>Selecione</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 mb-3">
+                                        <label for="localName" class="col-form-label">Nome do consultório:</label>
+                                        <input type="text" required class="form-control" id="localName">
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Fechar</button>
+                                    <button type="submit" class="btn btn-success">Cadastrar</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODAL DELETE LOCAL -->
+            <div class="modal fade" id="localDeleteModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <input id="localIdForRemove" type="text" value="" hidden>
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Excluir consultório</h5>
+                        </div>
+                        <div class="modal-body">
+                            O consultório será excluído permanentamente, realmente deseja excluir?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                            <button id="btnDeleteLocalModal" href="#" type="button" class="btn btn-danger"
                                 data-bs-dismiss="modal">Excluir</button>
                         </div>
                     </div>

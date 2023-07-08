@@ -14,6 +14,9 @@ $(document).ready(function() {
     GetVideoListForOptions()
     CreateVideo()
     DeleteVideo()
+    GetLocalListForOptions()
+    CreateLocal()
+    DeleteLocal()
 });
 
 function GetUserList(){
@@ -859,5 +862,177 @@ function DeleteVideo(){
         });
         
         $('#videoDeleteModal').modal('hide');
+    })
+}
+
+function GetLocalListForOptions(){
+    $("#btnLocals").click(function() {
+        loadPageAnimation(true)
+
+        $.ajax({
+            type: 'GET',
+            url: "/local/getAllLocals",
+            error: function (error) {
+                loadPageAnimation(false)
+                loadToastNotification("Erro interno, estamos solucionando o problema, tente novamente em instantes", "danger")
+            },
+            success: function (result) { 
+                if(result.status === 'success') {
+                    $(".localItem").remove()
+
+                    result.localList.forEach(local => {
+                        const newRow = `
+                        <tr id="localIdItem_${local.id}" class="localItem">
+                            <td>
+                                ${local.Nome}
+                            </td>
+                            <td>
+                                ${local.Ub.Nome}
+                            </td>
+                            <td>
+                                <span style="cursor: pointer;" onClick="setIdForRemoveLocalModal(${local.id})">
+                                    <img title="Excluir consultório" src="/icons/x-circle-fill.svg" alt="Excluir consultório" height="20rem">
+                                </span>
+                            </td>
+                        </tr>
+                        `
+                        $("#localListTable tbody").append(newRow)
+                    });
+
+                    setTimeout(function() {
+                        loadPageAnimation(false)                    
+                        $('#modalLocalList').modal('show'); 
+                    }, 300)
+
+                }else{
+                    loadPageAnimation(false)                    
+                    loadToastNotification(result.message, "danger")
+                }
+            }
+        });
+
+    })
+}
+
+function CreateLocal(){
+    $("#btnAddLocal").click(function() {
+        $('#modalLocalList').modal('hide'); 
+        $('#addLocalModal').modal('show');
+
+        $.ajax({
+            type: 'GET',
+            url: "/ubs/getAll",
+            error: function (error) {
+                loadPageAnimation(false)
+                loadToastNotification("Erro interno, estamos solucionando o problema, tente novamente em instantes", "danger")
+            },
+            success: function (result) { 
+                if(result.status === 'success') {
+                    $("#ubsIdForAddLocal").html('<option value="" selected>Selecione</option>');
+                    
+                    result.ubsList.forEach(ubs => {
+                        $("#ubsIdForAddLocal").append(`<option value="${ubs.id}">${ubs.Nome}</option>`)
+                    });
+
+                }else if(result.status === 'false'){
+                    $('#addLocalModal').modal('hide');
+                    loadPageAnimation(false)                    
+                    loadToastNotification(result.message, "danger")
+                }else{
+                    $('#addLocalModal').modal('hide');
+                    loadPageAnimation(false)
+                    loadToastNotification("Erro interno, estamos solucionando o problema, tente novamente em instantes", "danger")
+                }
+
+            }
+        });
+    })
+
+    $("#createLocalForm").submit(function(event) {
+
+        loadPageAnimation(true)
+
+        event.preventDefault();
+
+        var formData = {
+            name: $("#localName").val(),
+            ubsId: $("#ubsIdForAddLocal").val()
+        };
+
+        $.ajax({
+            type: 'POST',
+            url: "/local/insert",
+            data: formData,
+            error: function (error) {
+                loadPageAnimation(false)
+                loadToastNotification("Erro interno, estamos solucionando o problema, tente novamente em instantes", "danger")
+            },
+            success: function (result) { 
+                if(result.status === 'success') {
+                    loadPageAnimation(false)                    
+                    loadToastNotification(result.message, "success")
+
+                    $('#userCredentialModal .modal-body').html("");
+
+                    const userCredential = `Local: <h4>${$("#localName").val()}</h4> cadastrado com sucesso`
+
+                    $('#userCredentialModal .modal-body').append(userCredential); 
+                    
+                    $("#ubsIdForAddLocal").val("")
+                    $("#localName").val("")
+
+                    setTimeout(function() {
+                        $('#userCredentialModal').modal('show'); 
+                    }, 700)
+
+                }else if(result.status === 'false'){
+                    loadPageAnimation(false)                    
+                    loadToastNotification(result.message, "danger")
+                }else{
+                    loadPageAnimation(false)
+                    loadToastNotification("Erro interno, estamos solucionando o problema, tente novamente em instantes", "danger")
+                }
+            }
+        });
+
+        $('#addLocalModal').modal('hide'); 
+    })
+}
+
+function setIdForRemoveLocalModal(id) {
+    $('#modalLocalList').modal('hide'); 
+    $("#localIdForRemove").val(id)
+    $('#localDeleteModal').modal('show'); 
+}
+
+function DeleteLocal(){
+    $("#btnDeleteLocalModal").click(function() {
+
+        loadPageAnimation(true)
+
+        const localId = $("#localIdForRemove").val()
+
+        $.ajax({
+            type: 'DELETE',
+            url: "/local/remove/" + localId,
+            error: function (error) {
+                loadPageAnimation(false)
+                loadToastNotification("Erro interno, estamos solucionando o problema, tente novamente em instantes", "danger")
+            },
+            success: function (result) { 
+                if(result.status === 'success') {
+                    loadPageAnimation(false)                    
+                    loadToastNotification(result.message, "success")
+
+                    $("#localIdItem_" + localId).remove()
+                    
+                }else{
+                    loadPageAnimation(false)                    
+                    loadToastNotification(result.message, "danger")
+                }
+            }
+        });
+        
+        $('#localDeleteModal').modal('hide');
     })
 }

@@ -5,6 +5,7 @@ const senha = require('./senhaRoutes.js')
 const admin = require('./adminRoutes.js')
 const ubs = require('./ubsRoutes.js')
 const video = require('./videoRoutes.js')
+const local = require('./LocalRoutes.js')
 
 const routes = (app) => {
   app.use('/ubs', ubs)
@@ -14,6 +15,7 @@ const routes = (app) => {
   app.use('/:ubs/senha', senha)
   app.use('/painel', painel)
   app.use('/video', video)
+  app.use('/local', local)
   app.use('/', painel)
 }
 

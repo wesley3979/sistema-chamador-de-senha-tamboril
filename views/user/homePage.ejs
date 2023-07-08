@@ -95,11 +95,11 @@
                                             <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
                                             Alterar senha
                                         </a>
-                                        <!-- <a class="dropdown-item" href="#" data-toggle="modal"
-                                            data-target="#editMySetorModal">
+                                        <a class="dropdown-item" href="#" data-toggle="modal"
+                                            data-target="#editMyLocalModal">
                                             <i class="fas fa-clinic-medical fa-sm fa-fw mr-2 text-gray-400"></i>
-                                            Alterar consultório
-                                        </a> -->
+                                            Alterar consultório de atendimento
+                                        </a>
                                         <div class="dropdown-divider"></div>
                                         <a class="dropdown-item" href="#" data-toggle="modal"
                                             data-target="#logoutModal">
@@ -118,7 +118,8 @@
                         <div class="container-fluid">
                             <!-- Page Heading -->
                             <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                                <h1 class="h3 mb-0 text-gray-800">Atendimento <%= user.Setor.Nome %>
+                                <h1 class="h3 mb-0 text-gray-800">Setor: <%= user.Setor.Nome %>
+                                <h1 id="localAtendimentView" class="h3 mb-0 text-gray-800">Atendimento <%= user.Local.Nome %>
                                 </h1>
                                 <a href="#" id="btnBaixarRelatorio"
                                     class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
@@ -434,24 +435,24 @@
                 </div>
 
                 <!-- EDIT SETOR MODAL -->
-                <div class="modal fade" id="editMySetorModal" tabindex="-1" aria-hidden="true">
+                <div class="modal fade" id="editMyLocalModal" tabindex="-1" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title">Alterar consultório</h5>
+                                <h5 class="modal-title">Definir consultório</h5>
                                 <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">×</span>
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <form id="editMySetorForm">
+                                <form id="editMyLocalForm">
                                     <div class="row">
                                         <div class="col-12 mb-3">
-                                            <label for="setorIdForChange">Selecione o novo consultório:</label>
-                                            <select id="setorIdForChange" required
+                                            <label for="localIdForChange">Selecione o consultório de atendimento:</label>
+                                            <select id="localIdForChange" required
                                                 class="custom-select custom-select mb-3">
                                                 <option value="" selected>Selecione</option>
-                                                <% setorList.forEach(element=> { %>
+                                                <% localList.forEach(element=> { %>
                                                     <option value="<%=element.id%>">
                                                         <%=element.Nome%>
                                                     </option>
@@ -465,7 +466,7 @@
                                             data-dismiss="modal">Fechar</button>
                                         <button class="btn btn-primary" type="submit">
                                             <i class="fas fa-pen"></i>
-                                            Alterar consultório
+                                            Confirmar
                                         </button>
                                     </div>
                                 </form>

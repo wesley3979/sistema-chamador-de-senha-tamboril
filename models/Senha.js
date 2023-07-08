@@ -2,6 +2,7 @@ const { DataTypes } = require('sequelize')
 
 const db = require('../db/conn')
 const Setor = require('./Setor')
+const Local = require('./Local')
 
 const Senha = db.define('Senha', {
   Status: {
@@ -27,5 +28,9 @@ Setor.hasMany(Senha, {
 })
 
 Senha.belongsTo(Setor, {foreignKey : 'SetorId'})
+
+Local.hasMany(Senha, {
+  foreignKey: "LocalId",
+});
 
 module.exports = Senha

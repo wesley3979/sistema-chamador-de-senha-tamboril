@@ -2,7 +2,7 @@ const { DataTypes } = require('sequelize')
 
 const db = require('../db/conn')
 const Setor = require('./Setor')
-const Ubs = require('./Ubs')
+const Local = require('./Local')
 
 const User = db.define('User', {
   Login: {
@@ -28,5 +28,11 @@ Setor.hasMany(User, {
 })
 
 User.belongsTo(Setor, {foreignKey : 'SetorId'})
+
+Local.hasMany(User, {
+  foreignKey: 'LocalId'
+})
+
+User.belongsTo(Local, {foreignKey : 'LocalId'})
 
 module.exports = User
