@@ -28,16 +28,16 @@
             <div class="row h-100">
                 <div class="col-8">
                     <div class="h-100 row d-flex justify-content-center">
-                        <div class="h-25 w-75 row pt-3">
+                        <div class="h-25 w-100 row p-4 mt-4">
                             <div class="row w-100 d-flex justify-content-center">
-                                <div class="h-75 w-100 bg-light d-flex justify-content-center d-flex align-items-center shadow"
+                                <div class="h-75 w-100 ps-5 bg-light d-flex justify-content-center d-flex align-items-center shadow"
                                     style="border-radius: 15px;">
                                     <input type="hidden" id="principalPage_preferencial" val="">
                                     <h2 id="principalPage_paciente" class="text-center fw-bold"
                                         style="font-size: 3rem; color: #0080c1;">
                                     </h2>
                                 </div>
-                                <div class="h-25 w-50 bg-light d-flex justify-content-center align-items-center shadow"
+                                <div class="h-25 w-75 bg-light d-flex justify-content-center align-items-center shadow"
                                     style="border-radius: 0px 0px 35px 35px;">
                                     <h2 class="text-center fw-bold" style="font-size: 1.1rem;">
                                         <span style="color: #0080c1;">N°:</span>
@@ -49,33 +49,28 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="h-50 w-75 row p-4 ms-1">
-                            <div class="bg-light d-flex justify-content-center d-flex align-items-center shadow"
-                                style="border-radius: 90px 0 90px 0%;">
-                                <video class="shadow-sm" id="video" autoplay muted loop playsinline preload="metadata"
-                                    width="90%" height="90%">
+                        <div class="h-75 w-100 row p-4 ms-1 mb-1">
+                            <div class="d-flex justify-content-center d-flex align-items-center">
+                                <video class="shadow" id="video" autoplay muted loop playsinline preload="metadata"
+                                    width="100%" height="90%">
                                     <% videos.forEach(video=> { %>
                                         <source src="/<%= video.Path %>" type="video/mp4">
                                         <% }) %>
                                 </video>
                             </div>
                         </div>
-                        <div class="h-25 row d-flex justify-content-center d-flex align-items-end">
-                            <div class="mb-5 d-flex justify-content-center d-flex align-items-end">
-                                <img class="" title="Logo" src="/img/logo-site.png" alt="Logo" height="150rem">
-                            </div>
-                        </div>
-
                     </div>
                 </div>
                 <div class="col-4 bg-sucess" style="background-color: white;">
                     <div class="row h-75">
                         <div class="col-12 h-100">
-                            <div class="row m-2 d-flex justify-content-center d-flex align-items-end"
+                            <div class="row mb-5 d-flex justify-content-center d-flex align-items-end"
                                 style="height: 10%; color: #ffcd00;">
-                                <h3 class="text-center fw-bold" style="font-size: 30px;">
-                                    Últimas chamadas
-                                </h3>
+                                <div class="row d-flex">
+                                    <div class="mb-5 d-flex justify-content-center d-flex align-items-end">
+                                        <img class="" title="Logo" src="/img/logo-site.png" alt="Logo" height="140rem">
+                                    </div>
+                                </div>
                             </div>
                             <div class="row m-2 shadow justify-content-center d-flex align-items-center mb-3"
                                 style="background-color: #ffcd00; height: 30%; border-radius: 30px;">
