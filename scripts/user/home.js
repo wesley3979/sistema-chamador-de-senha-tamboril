@@ -771,7 +771,6 @@ function EditMyLocal() {
 
     event.preventDefault();
 
-    console.log($("#localIdForChange").val());
     var formData = {
       localId: $("#localIdForChange").val(),
     };
@@ -791,7 +790,7 @@ function EditMyLocal() {
         if (result.status === "success") {
           loadPageAnimation(false);
           loadToastNotification(result.message, "success");
-          $("#localAtendimentView").val("Atendimento " + result.local.Nome);
+          $("#localAtendimentView").text("Atendimento " + result.local.Nome);
           $("#editMyLocalModal").modal("hide");
         } else {
           loadToastNotification(result.message, "danger");
