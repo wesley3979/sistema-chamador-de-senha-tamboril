@@ -1,14 +1,39 @@
 var primeiraSenha = false;
 var senhasParaChamar = [];
+var ptBRVoice = null; // Variável global para armazenar a voz pt-BR
+var voiceLoadInterval = null; // Variável para armazenar o intervalo de busca
 
 $(document).ready(function () {
   relogio();
+
+  // Carrega a voz pt-BR ao carregar o documento
+  var synth = window.speechSynthesis;
+
+  function loadVoices() {
+    var voices = synth.getVoices();
+    voices.forEach((voice) => {
+      if (voice.lang === 'pt-BR') {
+        ptBRVoice = voice; // Armazena a voz pt-BR globalmente
+      }
+    });
+
+    // Verifica se a voz pt-BR foi encontrada
+    if (ptBRVoice) {
+      console.log("Voz pt-BR carregada com sucesso.");
+      clearInterval(voiceLoadInterval); // Cancela o intervalo quando a voz for encontrada
+    } else {
+      console.error("Nenhuma voz pt-BR disponível ainda, tentando novamente...");
+    }
+  }
+
+  // Inicia um intervalo para tentar carregar a voz a cada 500ms até encontrá-la
+  voiceLoadInterval = setInterval(loadVoices, 500);
 
   setInterval(async function () {
     if (senhasParaChamar[0]) {
       $("#principalPage").fadeOut();
 
-      //MOVE AS SENHAS ANTIGAS
+      // MOVE AS SENHAS ANTIGAS
       const ultimaSenha_paciente = primeiraSenha
         ? $("#principalPage_paciente").html()
         : "";
@@ -57,7 +82,7 @@ $(document).ready(function () {
         antepenultimaSenha_numero_setor
       );
 
-      //DEFINE NOVA SENHA
+      // DEFINE NOVA SENHA
       $("#principalPage_paciente").html(senhasParaChamar[0].Paciente);
       $("#principalPage_numero").html(senhasParaChamar[0].Numero);
       $("#principalPage_setor").html(senhasParaChamar[0].Setor.Nome);
@@ -95,33 +120,30 @@ socket.on("painel", (senha) => {
 });
 
 function PlayAudioFunction(texto) {
-  var x = document.createElement("AUDIO");
-
-  x.setAttribute("src", "audio/chamada.wav");
-  x.setAttribute("autoplay", "");
-  document.body.appendChild(x);
-
   var synth = window.speechSynthesis;
+  var toSpeak = new SpeechSynthesisUtterance(texto);
 
-  synth.onvoiceschanged = function () {
-    var voices = synth.getVoices();
-    var toSpeak = new SpeechSynthesisUtterance(texto);
-
-    try {
-      let vozSelecionada = voices.find((voice) => voice.lang === "pt-BR");
-      if (vozSelecionada) {
-        toSpeak.voice = vozSelecionada;
-      } else {
-        console.log("Voz pt-BR não encontrada, usando voz padrão.");
-      }
-    } catch (error) {
-      console.error("Erro ao definir a voz:", error);
+  // Utiliza a voz pt-BR já carregada
+  if (ptBRVoice) {
+    toSpeak.voice = ptBRVoice;
+    toSpeak.rate = 1; // Velocidade da fala (ajustável)
+    toSpeak.pitch = 1; // Tom da voz (ajustável)
+    
+    // Verifica se o sintetizador está pronto antes de falar
+    if (synth.speaking) {
+      console.warn("Synthesizer is already speaking. Waiting for it to finish...");
+      synth.cancel(); // Cancela qualquer fala que esteja em andamento para evitar conflitos
     }
 
-    setTimeout(function () {
+    // Aguarda um pequeno tempo antes de falar, para garantir que a síntese esteja pronta
+    setTimeout(function() {
       synth.speak(toSpeak);
-    }, 1000);
-  };
+      console.log("Falando: " + texto);
+    }, 200); // Pequeno atraso para garantir que a síntese esteja pronta
+
+  } else {
+    console.error("Voz pt-BR não encontrada.");
+  }
 }
 
 function relogio() {
