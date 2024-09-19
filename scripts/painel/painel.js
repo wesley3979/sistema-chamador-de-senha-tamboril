@@ -102,23 +102,26 @@ function PlayAudioFunction(texto) {
   document.body.appendChild(x);
 
   var synth = window.speechSynthesis;
-  var voices = synth.getVoices();
 
-  var toSpeak = new SpeechSynthesisUtterance(texto);
+  synth.onvoiceschanged = function () {
+    var voices = synth.getVoices();
+    var toSpeak = new SpeechSynthesisUtterance(texto);
 
-  try {
-    if (voices[16].Lang != "pt-BR") {
-      voices.forEach((voice) => {
-        if (voice.Lang == "pt-BR") toSpeak.voice = voice;
-      });
+    try {
+      let vozSelecionada = voices.find((voice) => voice.lang === "pt-BR");
+      if (vozSelecionada) {
+        toSpeak.voice = vozSelecionada;
+      } else {
+        console.log("Voz pt-BR não encontrada, usando voz padrão.");
+      }
+    } catch (error) {
+      console.error("Erro ao definir a voz:", error);
     }
-  } catch (error) {
-    primeiraSenha = true;
-  }
 
-  setTimeout(function () {
-    synth.speak(toSpeak);
-  }, 700);
+    setTimeout(function () {
+      synth.speak(toSpeak);
+    }, 1000);
+  };
 }
 
 function relogio() {
