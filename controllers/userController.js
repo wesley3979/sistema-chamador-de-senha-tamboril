@@ -246,7 +246,7 @@ class UserController {
             if(!existsUser)
                 return res.status(200).json({ status: "false", message: "Não foi possível gerar a nova senha, tente novamente em instantes." })
 
-            const temporaryPassword = Auth.generateRandomString(6)
+            const temporaryPassword = "12345678";//Auth.generateRandomString(6)
             const passwordForsave = Auth.gerarSenha(temporaryPassword);
 
             existsUser.Hash = passwordForsave.hash
