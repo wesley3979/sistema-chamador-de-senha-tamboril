@@ -121,7 +121,7 @@ socket.on("painel", (senha) => {
 
 function PlayAudioFunction(texto) {
   var synth = window.speechSynthesis;
-  var toSpeak = new SpeechSynthesisUtterance(texto);
+  var toSpeak = new SpeechSynthesisUtterance("paciente " + texto);
 
   // Utiliza a voz pt-BR já carregada
   if (ptBRVoice) {
